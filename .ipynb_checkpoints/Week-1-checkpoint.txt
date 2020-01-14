@@ -1,0 +1,97 @@
+Module 1
+
+Reasons why Google Cloud Platform is used for Data Analysis;
+
+1- Storage is cheap
+2- Focus on queries, not infrastructure
+3- Massive scalability
+
+Traditional big data platforms require an investment in infrastructure;
+
+1- RAM
+2- CPU
+3- Network
+4- Maintenance 
+
+Seperation of storage and computing power enables efficient reseource allocation. --Pay for only the resources you are using and no more.
+
+BigQuery scales automatically and you only pay for what you use. Fully managed infrastructure scales to process faster and you only pay bytes processes + storage.
+
+Projects organize and govern your activities in the cloud;
+
+- Navigate and launch cloud tools for your project by exploring the Products and Services menu
+- Work collaboratively by adding project users through IAM(Identity and Access Management)
+- Authorize tools and apps through the API manager
+
+Commonly used resources by data analysts; 
+
+- Storage in Google Cloud Storage
+    - Buckets are scalable containers that hold your data
+    - You can create and upload files to your buckets within your Cloud Console
+- Datasets in Google BigQuery
+
+Billed resources;
+
+- Storage in Google Cloud Storage
+    - Billed for Bucket Storage
+
+- Datasets in Google BigQuery
+    - Billed for Query processing
+    - Billeed for Table Storage
+    
+Quiz-1
+
+Q1- What is one of the key reasons Google Cloud Platform can scale effectively to query large datasets?
+Answer: Storage and compute power are handled seperately and users don't manage their own data warehouse architecture
+
+Q2- Select the common reasons why organizations move to the cloud for big data analysis:
+Answers: Reduced cost compared to on-premise and querying infrastructure is fully-managed
+
+Q3- What are the elastic storage bins called in Google Cloud Storage?
+Answer: Buckets
+
+Module 2
+
+-Things can be handled under GCP;
+
+Ingest
+Transform
+Store
+Analyze
+Visualize
+
+-In BigQuery we are billed for the bytes that we have processed so far. In this case we always need to check how much data will be processed at the specific query. On the other hand 5TB is free monthly.
+
+- Sample Query
+
+SELECT EXTRACT(DAYOFWEEK FROM trip_start_timestamp) as day, count(1) as rides
+FROM `bigquery-public-data.chicago_taxi_trips.taxi_trips` 
+where trip_seconds > 1000
+group by 1
+
+- Queries can be saved and shared via links.
+
+- Command + Click on the table allows us to visualise the columns in the table.
+
+- 9 fundamental BigQuery Features;
+
+    - Fully managed data warehouse: No-Ops, Petabyte-Scale
+    - Reliability: Backed by Google Datacenters
+    - Economical: Pay only for the processing and storage you use
+    - Security: Role ACLs, Data Encrypted in transport at rest
+    - Auditable: Every transaction logged and quaryable
+    - Scalable: Highly parallel processing model means fast queries
+    - Flexible: Mashup data across multiple datasets
+    - Easy-to-use: Familiar SQL, no indexes, open standards
+    - Public datasets: Explore and practise with real datasets
+    
+- Architecture
+    
+    User Query -> BigQuery Anaytics Engine(Job -> Analytics Engine)-> BigQuery Managed Storage(Table Name Columnar Layout)
+    
+    Google Bigquery = BigQuery Managed Storage + BigQuery Analysis(Dremel)
+    
+
+
+    
+
