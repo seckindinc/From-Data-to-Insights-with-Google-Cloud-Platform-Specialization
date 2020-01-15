@@ -134,10 +134,53 @@ group by 1
         
 - Cached table is a term that every time we run a query BigQuery stores the data in a temprorary table.
 
-
+- Query validator not only validates the query both also shows how much data will process when it runs.
    
-    
+- Quotas are used to protect all BigQuery tenants;
+
+    - 50 concurrent queries
+    - Query timeout: 6 hours
+    - 1000 updates to a table per day
+    - 1000 tables referenced by a single query
+    - Max results size: 128 MB compressed
       
+- Optimizing queries for cost;
 
+    - Only include the columns and rows you need (filter early)
+    - Use cached results when possible
+        - Permanent tables instead of views
+        - Views are saved queries
+    - Limit the use of User-Defined Functions
+
+Module 5
+
+- High quality datasets conform to strict integrity rules;
+
+    - Validity
     
+        - Out of range values
+        - Empty fields
+        - Data mismatch which means a certain value does not match
+    
+    - Accuracy 
+    
+        - Lookup datasets
 
+    - Completeness
+    
+        - Missing data
+        
+    - Consistency
+    
+        - Duplicate records
+        - Concurrency issues
+        
+    - Uniformity
+    
+        - Same units of measurement
+        
+- Cloud Data Prep
+
+    - Flow based ETL. Uses predefined 'wranglers' (aggregate, deduplicate etc) to transform the data.
+    - Chain transformation rules, wranglers, together into a 'recipe'.
+    
