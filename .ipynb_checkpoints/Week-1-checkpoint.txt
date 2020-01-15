@@ -38,17 +38,6 @@ Billed resources;
 - Datasets in Google BigQuery
     - Billed for Query processing
     - Billeed for Table Storage
-    
-Quiz-1
-
-Q1- What is one of the key reasons Google Cloud Platform can scale effectively to query large datasets?
-Answer: Storage and compute power are handled seperately and users don't manage their own data warehouse architecture
-
-Q2- Select the common reasons why organizations move to the cloud for big data analysis:
-Answers: Reduced cost compared to on-premise and querying infrastructure is fully-managed
-
-Q3- What are the elastic storage bins called in Google Cloud Storage?
-Answer: Buckets
 
 Module 2
 
@@ -91,7 +80,64 @@ group by 1
     
     Google Bigquery = BigQuery Managed Storage + BigQuery Analysis(Dremel)
     
+- In Jupyter Lab we can call '%load_ext google.cloud.bigquery' to invoke the BigQuery magic function and '%%bq query' on top of the SQL codes to directly run them in Jupyter Lab.
 
+- SQL functions;
+
+    - Formating integers;
+    
+    select FORMAT("%'d",1000) 
+    #Returns 1,000
+    
+    - Parsing string as date and extracting year
+    
+    SELECT PARSE_DATE('%Y%m', CAST(tax_pd as STRING)) as date,
+    EXTRACT(YEAR FROM PARSE_DATE('%Y%m', CAST(tax_pd as STRING))) as year
+    FROM `bigquery-public-data.irs_990.irs_990_2015` 
+    limit 10
+    
+    - Selecting null values
+    
+    select *
+    from table
+    where column is null
+    
+- Types of jobs in BigQuery;
+    
+    - Query
+    - Load data into a table - free
+    - Extracting the data - free
+    - Copy existing table - free
+    
+- Three categories of BigQuery pricing
+
+    - Storage
+    
+        - Amount of data in table
+        - Ingest rate of streaming data
+        - Automatic discount for old data
+        
+    - Processing
+    
+        - On-demand or flat rate plans
+        - On-demand based on amount of data processed
+        - 1 TB/month free
+        - Have to opt-in to run
+        
+    - Free
+    
+        - Loading
+        - Exporting
+        - Queries on metadata
+        - Cached queries
+        - Queries with errors
+        
+- Cached table is a term that every time we run a query BigQuery stores the data in a temprorary table.
+
+
+   
+    
+      
 
     
 
