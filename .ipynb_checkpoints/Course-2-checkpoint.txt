@@ -1,0 +1,20 @@
+- Temprorary or Permanent Table
+
+    - All Query Results are saved to either a Temprorary or Permanent Table
+    - If you specify a Destination Table then that table becomes Permanent, otherwise it is a new Temprorary Table
+    - Temprorary Tables are the basis of Query Cached Results
+    - Temprorary Tables last 24 hours only
+    
+- Cache
+
+    - Cache = Faster Results. Cache is selected by default.
+    - Cache is not used when;
+    
+        - Underlying table(s) updated
+        - Deterministic queries used(like CURRENT_TIMESTAMP())
+        - Cache disabled in Show Options
+        
+- Storing results in a View
+
+    - View = Saved SQL Query(a virtual table)
+    - The underlying query is re-ran each time the view is queried
