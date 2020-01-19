@@ -1,3 +1,5 @@
+Week 1 
+
 - Temprorary or Permanent Table
 
     - All Query Results are saved to either a Temprorary or Permanent Table
@@ -18,3 +20,91 @@
 
     - View = Saved SQL Query(a virtual table)
     - The underlying query is re-ran each time the view is queried
+    
+Week 2
+
+- We can ingest data permanently into BigQuery from a variety of formats;
+
+    - Cloud Storage
+    - Google Drive
+    - Cloud Dataprep
+    - Cloud BigTable
+    - Csv, Json, Avro
+    
+- External table is like a pointer to the file. It is not stored in BigQuery managed storage and we can't benefit from the permanent table perks, like cache.
+
+- Partitioned tables
+
+    A partitioned table is a special table that is divided into segments, called partitions, that make it easier to manage and query your data. By dividing a large table into smaller partitions, you can improve query performance, and you can control costs by reducing the number of bytes read by a query.
+
+    There are two types of table partitioning in BigQuery:
+
+    - Tables partitioned by ingestion time: Tables partitioned based on the data's ingestion (load) date or arrival date.
+    - Partitioned tables: Tables that are partitioned based on a TIMESTAMP or DATE column.
+    
+    Tables without partitions need to be scanned for all the records to see whether they satisfy the date-matching condition in the Where clause. 
+
+    Query below creates a partitioned table with the partition column date. date column was created in the select statement. 
+
+    #standardSQL
+     CREATE OR REPLACE TABLE ecommerce.days_with_rain
+     PARTITION BY date
+     OPTIONS (
+       partition_expiration_days=90,
+       description="weather stations with precipitation, partitioned by day"
+     ) AS
+     SELECT
+       DATE(CAST(year AS INT64), CAST(mo AS INT64), CAST(da AS INT64)) AS date,
+       (SELECT ANY_VALUE(name) FROM `bigquery-public-data.noaa_gsod.stations` AS stations
+        WHERE stations.usaf = stn) AS station_name,  -- Stations may have multiple names
+       prcp
+     FROM `bigquery-public-data.noaa_gsod.gsod*` AS weather
+     WHERE prcp < 99.9  -- Filter unknown values
+       AND prcp > 0      -- Filter stations/days with no precipitation
+       AND _TABLE_SUFFIX = CAST( EXTRACT(YEAR FROM CURRENT_DATE()) AS STRING)
+  
+- BigQuery Table Wildcards
+
+    When there are lots of table needs to be merged with union method it is not feasible to union one by one. If the table names have a suffix or prefix pattern we can query them with wildcard operators. 
+    
+    - Query below selects all columns from the tables start with gsod name;
+    
+        select *
+        from `bigquery-public-data.noaa_gsod.gsod*`
+        
+    - Filtering tables with a certain pattern of suffix;
+    
+        select *, _TABLE_SUFFIX as table_year
+        from `bigquery-public-data.noaa_gsod.gsod*`
+        where _TABLE_SUFFIX > '1950'
+
+- Table Joins
+
+    - We can do joins between a table and bulk of tables which were selected with wildcards.
+    - Joining on Non-Unique fields explode your dataset
+    
+Week 3
+
+- Dimensions and Measures
+
+    - Dimensions
+    
+        A field that can be considered an independent variable. Usually contains qualitative, categorical information.
+        
+        Examples;
+        
+            - Name
+            - Location
+            - Job title
+        
+    - Measures
+    
+        A field that is a dependent variable; that is, the value is a function of one or more dimensions. e.g. any field contains numeric (quantitive) information.
+        
+        Examples; 
+        
+            - Revenue
+            - Salary
+            - Expenses
+            
+    

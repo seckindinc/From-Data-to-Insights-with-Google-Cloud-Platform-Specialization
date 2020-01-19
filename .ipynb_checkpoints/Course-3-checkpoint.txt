@@ -1,0 +1,196 @@
+Week 1
+
+- Approximate Aggregate Functions
+
+    - Count(distinct) vs Approx_count_distinct()
+    
+- Navigation Functions
+
+    - LEAD(): Returns the value of a row n rows ahead of the current row
+    - LAG(): Returns the value of a row n rows behind the current row
+    - NTH_VALUE(): returns the value of the nth value in the window
+
+Select *, RANK() OVER ( PARTITION BY department ORDER BY start date ) AS rank
+From table
+WHERE rank = 1;
+
+- User Defined Functions
+
+    - CREATE TEMPORARY FUNCTION: Creates a new function. A function can contain zero or more named_parameters
+    - RETURNS[data_type]: Specifies the data type that the function returns.
+    - LANGUAGE[language]: Specifies the language for the function.
+    - AS[external_code]: Specifies the code that the function runs.
+
+CREATE TEMPORARY FUNCTION multiplyImputs(x FLOAT64, y FLOAT64)
+RETURNS FLOAT64
+LANGUAGE js AS """
+	return x*y;
+""";
+
+WITH numbers as(
+select 1 as x, 5 as y)
+
+select multiplyImputs(8,4)
+from numbers
+
+    - Concurrent UDF function count is 6.
+
+- Traditional Relational Database Architect
+
+    - Adding new columns to existing schema regarding to the new business models will cause wider tables with full off null or 0 values.
+    
+- BigQuery Architecture 
+    
+    - Column-Based data storage: Rows and columns are stored in compressed format in Google Colossus. Columns are individually compressed. Access values from a few columns without reading every column.
+        
+    - Break apart tables into pieces: Tables are speerated into small shards and called upon to the query.BigQuery automatically pieces it all back together for queries. Shards of data are read and processed in parallel.
+    
+    BigQuery automatically balances and scales workers. Up to 2000 workers to process concurrent queries.
+    
+    Each worker is a virtual machine. 
+    
+             Gateway
+    '                   '
+    '                   '
+    '                   '
+    Query Master        Query Master
+    Q1, Q4, Q6, Q7      Q2, Q3, Q5, Q8
+    '                   '             '
+    '                   '             '
+    '                   '             '
+    Worker              Worker        Worker
+    
+    BiqQuery workers communicate by shuffiling data in-memory
+    
+        - Workers consume data values and perform operations in parallel
+        - Workers produce output to the in-memory shuffle service
+        - Workers consume new data and continue processing
+        
+    BigQuery shuffling enables massive scale
+    
+        - Shuffle allows BigQuery to process massively parallel petabyte-scale data jobs
+        - Everything after query execution is automatically scaled and managed
+        - All queries, large and small, use shuffle
+    
+    - Store nested fields within a table: Rows are stored in parent - child relationships so we can store any parent with related child information in a nested way.
+    
+    Normalized table format;
+    
+    people     cities_lived
+          
+    name  -->  name
+    age        city
+    gender     years_lieved
+    
+    Denormalized table format;
+    
+    people_cities_lived
+    
+    name
+    age
+    gender
+    city_name
+    years_lived
+    
+    Repeated
+    
+    name
+    age
+    gender
+    cities_lived (repeated)
+        city
+        years_lived
+        
+- Working with Repeated Fields
+
+    - Introducing Arrays and Structs: 
+    
+        - Arrays are ordered list of zero or more data values that must have the same data type.
+        
+        create table array__
+        as
+        select ['a','b','c'] as array_
+        
+        select * from array__
+        
+        Row array_
+        1   a
+            b
+            c
+            
+        select ARRAY_LENGTH(array_) as array_size
+        
+        Row array_size
+        1   3
+    
+    - Flattening Arrays: CROSS JOIN and UNNEST flattens arrays so we can access elements
+    
+    select items, customer_name
+    from UNNEST(['a','b','c']) as items
+    CROSS JOIN
+    (select 'dummy' as column_name)
+    
+    Row item column_name
+    1   a    dummy
+    2   b    dummy
+    3   c    dummy
+    
+        - ARRAY_AGG function allows us to create arrays from rows. 
+        
+            select ARRAY_AGG(item) as items 
+            from table
+
+            select ARRAY_AGG(item order by item)
+            from table
+    
+        - STRUCTs are flexible containers. 
+        
+            STRUCTs are a container of ordered fields each with a type (required) and field name (optional).
+            
+            You can store multiple data types in a STRUCT (even Arrays).
+            
+            One STRUCT can have many values, looks and behaves similar to a table.
+            
+            ARRAYS can contain STRUCTs as values
+            
+            select STRUCT(35 as age, 'Jacob' as name) as customer
+            
+            select STRUCT(35 as age, 'Jacob' as name, ['apple','pear','peach'] as items) as customer
+            
+            select 
+            [STRUCT(35 as age, 'Jacob' as name, ['apple','pear','peach'] as items),
+             STRUCT(33 as age, 'Miranda' as name, ['apple','pear','water'] as items)
+            ] AS customers
+            
+            WITH orders as (              
+                select [
+                STRUCT(35 as age, 'Jacob' as name, ['apple','pear','peach'] as items),
+                STRUCT(33 as age, 'Miranda' as name, ['apple','pear','water'] as items)
+                ] AS customers
+                )
+
+                select customers from orders as o cross join UNNEST(o.customers) as customers where 'water' in UNNEST(customers.items)            
+    
+    We can use the syntax below to use nested fields without CROSS JOIN and UNNEST
+    
+    SELECT
+      ein,
+      expense
+    FROM `data-to-insights.irs_990.irs_990_repeated` n, n.expense_struct AS expense
+    WHERE expense.type = 'Legal'
+    ORDER BY expense.amount DESC
+    LIMIT 10
+    
+- Data Studio
+
+    There are 2 parts to Data Studio cache: the query cache and prefetch cache
+
+    When all the carts in the report are being served from a cache, a lightning bolt icon appears in the bottom right corner.
+
+    Break both caches in Edit mode using Refresh cache 
+
+    You should turn off prefect cache if your data changes frequently 
+
+    Sharing a report does not share direct access to any added data
+
+    Data sources must be shared separately from reports
