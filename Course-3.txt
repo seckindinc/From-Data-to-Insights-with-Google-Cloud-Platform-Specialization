@@ -194,3 +194,72 @@ from numbers
     Sharing a report does not share direct access to any added data
 
     Data sources must be shared separately from reports
+    
+Week 2
+
+- Avoid Input / Output Wastefulness
+
+    - Do not use 'Select *', use only the columns you need
+    - Denormalize your schemas and take advantage of nested and repeated fields
+    - Use granular suffixes in your table wildcards for more specificity
+    
+- Use BigQuery native storage for the best performance
+
+    - External direct data connections can never be cached
+    - Live edits to underlying external sources could create race conditions which is BigQuery will not know which spreadshift is the latest
+    - Native BigQuery tables have intelligence built-in like automatic predicate pushdown which is when we use filters, BigQuery filters those rows beforehand and decrease the amount of data being processed
+    
+- Optimize communication between slots(via shuffle)
+
+    - Pre-filter your data before doing JOINs
+    - Many shuffle stages can indicate data partition issues(skew)
+    
+- Do not use WITH clauses in place of materializing results
+
+    - Commonly filtering and transforming the same results? Store them into a permanent table
+    - WITH clause queries are not materialized and are re-queried if referenced more than once
+
+- Be careful using GROUP by accross many distinct values
+
+    - Best when the number of distinct groups is small(fewer shuffles of data)
+    - Grouping by high-cardinality unique ID is a bad idea
+    
+- Reduce Javascript UDFs to reduce computational load
+
+   - Javascript UDFs require BigQuery to launch a Java subprocess to run
+   - Use native SQL functions whenever possible
+   
+- Data skew
+
+    - Filter your dataset as early as possible(this avoids overloading workers on JOINs)
+    - Hint: Use the Query Explanation map and compare the Max vs the Avg times to highlight skew
+    - BigQuery will automatically attempt to reshuffle workers that are overloaded with data
+    
+- Diagnose performance issue with Query Explanation Map
+
+    - waitRatioAvg: Time the average worker spent waiting to be scheduled.
+    - waitRatioMax: Time the slowest worker spent waiting to be scheduled.
+    - readRatioAvg: Time the average worker spent reading input data.
+    - readRatioMax: Time the slowest worker spent reading input data
+    - computeRatioAvg: Time the average worker spent CPU-bound.
+    - computeRatioMax: Time the slowest worker spent CPU-bound.
+    - writeRatioAvg: Time the average worker spent writing ouput data.
+    - writeRatioMax: Time the slowest worker spent writing ouput data.
+    
+    Explanation map shows stages of the shuffeling operations.
+    
+    If we only try to analyse the most recent data, data partitioning is the best option.
+    
+    Select 
+        order_id
+    from 
+        table
+    Where 
+        _PARTITIONTIME BETWEEN T1 and T2
+        
+- Authorization
+
+    Permissions are set at dataset level not table level. We can grant access to datasets or create authorised views and grant to them.
+
+    When a project is created, BigQuery grants the Owner role to the user who created the project. Viewer, editor and owner are the primitive roles.    
+    

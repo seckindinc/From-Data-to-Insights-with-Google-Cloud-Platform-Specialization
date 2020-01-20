@@ -1,0 +1,36 @@
+Week 1
+
+- Cloud Vision API provides pretrained models to predict and serves the API as a service.
+
+- Cloud Translate API provides ptrained models to convert texts between languages or sentimental analysis.
+
+- Google Cloud Datalab
+
+  Developer Laptop --> Notebook Cloud DataLab <--Hosted on-- Compute Engine
+                               |
+  Users --> Notebook files Cloud repository
+  
+  Using '-n' to provide a name for the query as you can have more than one query in a single notebook.
+  
+  BigQuery operations have defined parameters;
+     
+     - %%bq datasets
+     - %%bq tables
+     - %%bq query
+  
+Week 2
+
+    - Good dataset feature columns must be;
+        
+        - Related to the objective
+        - Known at prediction-time
+        - Numeric with meaningful magnitude
+        - Have enough examples
+        - Bring human insight to problem
+        
+    - Tools to creating data pipelines;
+    
+        - Dataprep(batch)
+        - Dataflow(batch/stream)
+        - Cloud Composer
+       
