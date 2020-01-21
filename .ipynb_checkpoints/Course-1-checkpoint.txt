@@ -1,0 +1,186 @@
+Module 1
+
+Reasons why Google Cloud Platform is used for Data Analysis;
+
+1- Storage is cheap
+2- Focus on queries, not infrastructure
+3- Massive scalability
+
+Traditional big data platforms require an investment in infrastructure;
+
+1- RAM
+2- CPU
+3- Network
+4- Maintenance 
+
+Seperation of storage and computing power enables efficient reseource allocation. --Pay for only the resources you are using and no more.
+
+BigQuery scales automatically and you only pay for what you use. Fully managed infrastructure scales to process faster and you only pay bytes processes + storage.
+
+Projects organize and govern your activities in the cloud;
+
+- Navigate and launch cloud tools for your project by exploring the Products and Services menu
+- Work collaboratively by adding project users through IAM(Identity and Access Management)
+- Authorize tools and apps through the API manager
+
+Commonly used resources by data analysts; 
+
+- Storage in Google Cloud Storage
+    - Buckets are scalable containers that hold your data
+    - You can create and upload files to your buckets within your Cloud Console
+- Datasets in Google BigQuery
+
+Billed resources;
+
+- Storage in Google Cloud Storage
+    - Billed for Bucket Storage
+
+- Datasets in Google BigQuery
+    - Billed for Query processing
+    - Billeed for Table Storage
+
+Module 2
+
+-Things can be handled under GCP;
+
+Ingest
+Transform
+Store
+Analyze
+Visualize
+
+-In BigQuery we are billed for the bytes that we have processed so far. In this case we always need to check how much data will be processed at the specific query. On the other hand 5TB is free monthly.
+
+- Sample Query
+
+SELECT EXTRACT(DAYOFWEEK FROM trip_start_timestamp) as day, count(1) as rides
+FROM `bigquery-public-data.chicago_taxi_trips.taxi_trips` 
+where trip_seconds > 1000
+group by 1
+
+- Queries can be saved and shared via links.
+
+- Command + Click on the table allows us to visualise the columns in the table.
+
+- 9 fundamental BigQuery Features;
+
+    - Fully managed data warehouse: No-Ops, Petabyte-Scale
+    - Reliability: Backed by Google Datacenters
+    - Economical: Pay only for the processing and storage you use
+    - Security: Role ACLs, Data Encrypted in transport at rest
+    - Auditable: Every transaction logged and quaryable
+    - Scalable: Highly parallel processing model means fast queries
+    - Flexible: Mashup data across multiple datasets
+    - Easy-to-use: Familiar SQL, no indexes, open standards
+    - Public datasets: Explore and practise with real datasets
+    
+- Architecture
+    
+    User Query -> BigQuery Anaytics Engine(Job -> Analytics Engine)-> BigQuery Managed Storage(Table Name Columnar Layout)
+    
+    Google Bigquery = BigQuery Managed Storage + BigQuery Analysis(Dremel)
+    
+- In Jupyter Lab we can call '%load_ext google.cloud.bigquery' to invoke the BigQuery magic function and '%%bq query' on top of the SQL codes to directly run them in Jupyter Lab.
+
+- SQL functions;
+
+    - Formating integers;
+    
+    select FORMAT("%'d",1000) 
+    #Returns 1,000
+    
+    - Parsing string as date and extracting year
+    
+    SELECT PARSE_DATE('%Y%m', CAST(tax_pd as STRING)) as date,
+    EXTRACT(YEAR FROM PARSE_DATE('%Y%m', CAST(tax_pd as STRING))) as year
+    FROM `bigquery-public-data.irs_990.irs_990_2015` 
+    limit 10
+    
+    - Selecting null values
+    
+    select *
+    from table
+    where column is null
+    
+- Types of jobs in BigQuery;
+    
+    - Query
+    - Load data into a table - free
+    - Extracting the data - free
+    - Copy existing table - free
+    
+- Three categories of BigQuery pricing
+
+    - Storage
+    
+        - Amount of data in table
+        - Ingest rate of streaming data
+        - Automatic discount for old data
+        
+    - Processing
+    
+        - On-demand or flat rate plans
+        - On-demand based on amount of data processed
+        - 1 TB/month free
+        - Have to opt-in to run
+        
+    - Free
+    
+        - Loading
+        - Exporting
+        - Queries on metadata
+        - Cached queries
+        - Queries with errors
+        
+- Cached table is a term that every time we run a query BigQuery stores the data in a temprorary table.
+
+- Query validator not only validates the query both also shows how much data will process when it runs.
+   
+- Quotas are used to protect all BigQuery tenants;
+
+    - 50 concurrent queries
+    - Query timeout: 6 hours
+    - 1000 updates to a table per day
+    - 1000 tables referenced by a single query
+    - Max results size: 128 MB compressed
+      
+- Optimizing queries for cost;
+
+    - Only include the columns and rows you need (filter early)
+    - Use cached results when possible
+        - Permanent tables instead of views
+        - Views are saved queries
+    - Limit the use of User-Defined Functions
+
+Module 5
+
+- High quality datasets conform to strict integrity rules;
+
+    - Validity
+    
+        - Out of range values
+        - Empty fields
+        - Data mismatch which means a certain value does not match
+    
+    - Accuracy 
+    
+        - Lookup datasets
+
+    - Completeness
+    
+        - Missing data
+        
+    - Consistency
+    
+        - Duplicate records
+        - Concurrency issues
+        
+    - Uniformity
+    
+        - Same units of measurement
+        
+- Cloud Data Prep
+
+    - Flow based ETL. Uses predefined 'wranglers' (aggregate, deduplicate etc) to transform the data.
+    - Chain transformation rules, wranglers, together into a 'recipe'.
+    
